@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD | Nama-Nama Benua</title>
+    <link rel="stylesheet" href="assets/prism/prism-okaidia.min.css">
+    <link rel="stylesheet" href="assets/prism/prism-line-numbers.min.css">
+    <link rel="stylesheet" href="assets/prism/prism-toolbar.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<main>
+
+<h1 class="judul">LARAVEL CHEATSHEET : CRUD - Nama-Nama Benua</h1>
+<span class="me">Ananda Daniswara - <a href="https://github.com/skylotus-design">Skylotus Design</a></span>
+
+<br><br><hr>
+<h3>
+    <a href="tutorial/00-menu-utama.html">Menu Utama</a> | 
+    <a href="tutorial/00-pesiapan.html">Install dan Persiapan</a>
+</h3>
+<hr><br>
+
+<h2 class="step">01. Target Tabel: benua MySQL</h2>
+<span class="ket">Membuat Tabel relasi untuk nama-nama benua, nama-nama negara, dan gambar peta</span><hr>
+
+<div style="margin: 20px auto 50px auto;">
+    <img src="assets/img/target_tabel.png" alt="img1" style="width: 100%;">
+</div>
+
+<h2 class="step">02. Membuat Database</h2>
+<span class="ket">Jalankan Laragon, lalu pergike phpMyAdmindan, dan buat database baru</span><hr>
+<div style="margin: 20px auto 50px auto;">
+    <img src="assets/img/database-buat-baru.png" alt="img1" style="width: 100%;">
+</div>
+
+
+<h2 class="step">03. Membuat Project</h2>
+<span class="ket">Siapkan folder kosong di File Explorer lalu buat project baru Laravel (versi terakhir) pada direktori saat ini</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    CMD: composer create-project laravel/laravel .
+
+</code></pre>
+
+<pre class="line-numbers"><code class="language-PHP">
+    # problem:
+    Failed to download laravel/laravel from dist: The zip extension and unzip/7z commands
+    are both missing, skipping. The php.ini used by your command-line PHP is:
+    C:\laragon\bin\php\php-8.3.33-Win32-vs16-x64\php.ini
+
+    # solver:
+    hapus ; sebelum extension=zip di dalam php.ini
+
+</code></pre>
+
+<h2 class="step">04. Setting file .env</h2>
+<span class="ket">Uncomment bagian DB_ pada setting .env lalu atur value sesuai dengan database yang kita miliki</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=nama_database
+    DB_USERNAME=username
+    DB_PASSWORD=password
+
+</code></pre>
+
+
+<h2 class="step">05. Jalankan Server</h2>
+<pre class="line-numbers"><code class="language-PHP">
+    CMD: php artisan serve
+
+</code></pre>
+
+<pre class="line-numbers"><code class="language-PHP">
+    # Problem:
+    database bawaan laravel belum di-migrate
+
+    # Solver:
+    CMD: php artisan migrate
+
+</code></pre>
+
+<h2 class="step">06. Membuat File Pertama</h2>
+<span class="ket">Pergi ke direktori resource/views lalu buat file bernama <em>belajar_laravel.blade.php</em></span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    &lt;!DOCTYPE html&gt;
+    &lt;html lang="en"&gt;
+    &lt;head&gt;
+        &lt;meta charset="UTF-8"&gt;
+        &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+        &lt;title&gt;Belajar Laravel&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+
+        &lt;h1&gt;SELAMAT DATANG&lt;/h1&gt;
+        &lt;h4&gt;Di Les Privat PHP Laravel - Rumah-Belajar.com&lt;/h4&gt;
+            
+    &lt;/body&gt;
+    &lt;/html&gt;
+
+</code></pre>
+
+<h2 class="step">07. Membuat Route</h2>
+<span class="ket">Pergi ke direktori routes, cari file <em>web.php</em> dan tambah kode berikut untuk membuka file <em>belajar_laravel.blade.php</em></span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    Route::get('/latihan', function () {
+        return view('belajar_laravel');
+    });
+
+</code></pre>
+<span class="ket">Buka browser lalu pergi ke:</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    http://127.0.0.1:8000/latihan
+
+</code></pre>
+
+
+<h2 class="step">08. Membuat Hyperlink</h2>
+<span class="ket">Kembali ke file <em>belajar_laravel.blade.php</em> lalu buat hyperlink untuk daftar nama-nama benua:</span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    &lt;h1&gt;SELAMAT DATANG&lt;/h1&gt;
+    &lt;h4&gt;Di Les Privat PHP Laravel - Rumah-Belajar.com&lt;/h4&gt;
+
+    &lt;hr&gt;&lt;br&gt;
+
+    &lt;h3&gt;Belajar CRUD Laravel&lt;/h3&gt;
+
+    &lt;a href="/benua"&gt;Daftar Nama Benua di Dunia&lt;/a&gt;  &lt;!--Hyperlink pertama--&gt;
+
+</code></pre>
+
+
+<h2 class="step">09. Route: /benua</h2>
+<span class="ket">Tambahkan route untuk <em>/benua</em> di routes/web.php</em></span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    Route::get('/latihan', function () {
+        return view('belajar_laravel');
+    });
+    
+    Route::get('/benua', [BenuaController::class, 'benua_tampil']);
+    
+</code></pre>
+<pre class="line-numbers"><code class="language-PHP">
+    # problem
+    Target class [BenuaController] does not exist.
+
+    # solver
+    use App\Http\Controllers\BenuaController;
+
+</code></pre>
+
+
+<h2 class="step">10. Membuat BenuaController</h2>
+<span class="ket">Buat controller BenuaController</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    CMD: php artisan make:controller BenuaController
+
+</code></pre>
+<h2 class="step">11. Atur Controller</h2>
+<span class="ket">Buka BenuaController di direktori app/Http/Controllers, lalu tambahkan metode <em>benua_tampil</em> di dalam class</em></span><hr>
+<pre class="line-numbers"><code class="language-PHP"> 
+    public function benua_tampil()
+    {
+        return view('benua_daftar');
+    }
+
+</code></pre>
+
+<h2 class="step">12. Membuat File: benua_daftar.blade.php</h2>
+<span class="ket">Buka kembali direktori routes/views, dan buat file bernama <em>benua_daftar.blade.php</em></span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    &lt;div&gt;
+
+        &lt;h4&gt;Daftar Nama-Nama Benua&lt;/h4&gt;&lt;hr&gt;&lt;br&gt;
+
+    &lt;/div&gt;
+    
+</code></pre>
+
+
+<h2 class="step">13. Reload: /latihan</h2>
+<span class="ket">Reload  http://127.0.0.1:8000/latihan di browser lalu klik tombol Hyperlink Nama-Nama Benua atau pergi ke:</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    http://127.0.0.1:8000/benua
+
+</code></pre>
+
+
+<h2 class="step">14. Membuat Migration</h2>
+<span class="ket">Membuat file migration untuk membuat tabel benua di MySQL</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    CMD: php artisan make:migration create_benua_table
+
+</code></pre>
+
+<h2 class="step">15. Ubah File Migration</h2>
+<span class="ket">Buka file migration create_benua_table yang adadi direktori database/migrations lalu ubah menjadi:</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    public function up(): void
+    {
+        Schema::create('benua', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama_benua', 255);
+            $table->timestamps();
+        });
+    }
+
+</code></pre>
+<span class="ket">Jalankan perintah migrate untuk membuat tabel benua di MySQL:</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    CMD: php artisan migrate
+
+</code></pre>
+
+
+<h2 class="step">16. Insert Tabel Benua</h2>
+<span class="ket">Kembali ke phpMyAdmin, cari tabel benua, lalu nsert manual tabel benua dengan minimal 2 nama-nama benua</span><hr>
+<div style="margin: 20px auto 50px auto;">
+    <img src="assets/img/insert-nama-benua-01.jpg" alt="img1" style="width: 100%;">
+</div>
+
+<h2 class="step">27. Membuat Model</h2>
+<span class="ket">Buat model dengan nama <em>Benua</em> untuk mengambil data langsung dari database MySQL</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    CMD: php artisan make:model Benua
+
+</code></pre>
+
+
+<h2 class="step">18. Model dan Controller</h2>
+<span class="ket">Buka <em>BenuaController</em> di direktori app/Http/Controllers, lalu panggil model <em>Benua</em> untuk di kirim ke <em>benua_daftar.blade.php</em></em></span><hr>
+<pre class="line-numbers"><code class="language-PHP"> 
+    public function benua_tampil()
+    {
+        $benuaModel = Benua::all();
+        return view('benua_daftar', ["data_benua" => $benuaModel]);
+    }
+
+</code></pre>
+<pre class="line-numbers"><code class="language-PHP">
+    # solver
+    use App\Models\Benua;
+    
+</code></pre>
+
+
+<h2 class="step">19. Ubah benua_daftar.blade.php</h2>
+<span class="ket">Buka kembali <em>benua_daftar.blade.php</em> yang dibuat di direktori routes/views, lalu tambahkan </span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    &lt;div&gt;
+
+        &lt;h4&gt;Daftar Nama-Nama Benua&lt;/h4&gt;&lt;hr&gt;&lt;br&gt;
+
+        &lt;ul&gt;
+            @foreach($data_benua as $benua)
+            &lt;li&gt;
+                {{$benua-&gt;nama_benua}}
+            &lt;/li&gt;
+            @endforeach
+        &lt;/ul&gt;
+
+    &lt;/div&gt;
+    
+</code></pre>
+
+<h2 class="step">20. Reload: /benua</h2>
+<span class="ket">Reload  http://127.0.0.1:8000/benua di browser</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    # problem:
+    SQLSTATE[42S02]: Base table or view not found: 1146 Table 'laravel_cheat.benuas' doesn't exist
+    (Connection: mysql, Host: 127.0.0.1, Port: 3306, Database: laravel_cheat, SQL: select * from `benuas`)
+
+    # solver:
+    Tambahakan protected $table = "benua"; di dalam class model Benua
+
+</code></pre>
+
+
+<h2 class="step">21. Extends dan Section</h2>
+<span class="ket">Pergi ke <a href="tutorial/00-navbar.html" target="_blank">Tutorial Navbar</a> untuk menambahkan <em>Extends</em> dan <em>Section</em></span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    &lt;a href="/latihan">Home&lt;/a&gt; | &lt;a href="/benua"&gt;Daftar Nama-Nama Benua&lt;/a&gt;&lt;hr&gt;&lt;br&gt;&lt;br&gt;
+    
+    @yield('konten_utama')
+
+</code></pre>
+<pre class="line-numbers"><code class="language-HTML">
+    @extends('navbar/navbar')
+    @section('konten_utama')
+
+    &lt;!-- Konten utama diletakan di sini --&gt;
+
+    @endsection
+
+</code></pre>
+
+
+<h2 class="step">22. Tambah Data</h2>
+<span class="ket">Kembali ke <em>benua_daftar.blade.php</em>, buatkan hyperlink untuk halaman form tambah data nama-nama benua</span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    &lt;ul&gt;
+        @foreach($data_benua as $benua)
+        &lt;li&gt;
+            {{$benua-&gt;nama_benua}}
+        &lt;/li&gt;
+        @endforeach
+    &lt;/ul&gt;&lt;br&gt;
+
+    &lt;a href="/benua-tambah"&gt;Tambah+&lt;/a&gt;
+
+</code></pre>
+
+
+<h2 class="step">23. Route: /benua-tambah</h2>
+<span class="ket">Buat route untuk <em>/benua-tambah</em> di routes/web.php yang akan menjalankan metode <em>benua_tambah</em> pada BenuaController</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    Route::get('/benua-tambah', [BenuaController::class, 'benua_tambah']);
+
+</code></pre>
+
+<h2 class="step">24. Metode: benua_tambah</h2>
+<span class="ket">Buat metode untuk <em>benua_tambah</em> di BenuaController untuk membuka <em>benua_tambah_form.blade.php</em></span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    public function benua_tambah()
+    {
+        return view('benua_tambah_form');
+    }
+
+</code></pre>
+
+<h2 class="step">25. Buat File: benua_tambah_form.blade.php</h2>
+<span class="ket">Buat file <em>benua_tambah_form.blade.php</em> di direktori resources/views, gunakan Extends dan Section</span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    @extends('navbar/navbar')
+
+    @section('konten_utama') 
+
+    &lt;form action="/benua-tambah-proses" method="post"&gt;
+    @csrf
+        &lt;input type="text" name="nama_benua"&gt;
+        &lt;input type="submit" name="simpan"&gt;
+    &lt;/form&gt;
+
+    @endsection
+
+</code></pre>
+<pre class="line-numbers"><code class="language-PHP">
+    #problem
+    The GET method is not supported for route benua-tambah-proses. Supported methods: POST.
+
+    # solver
+    Pastikan form memiliki method="post"
+
+</code></pre>
+
+
+<h2 class="step">26. Route: /benua-tambah-proses</h2>
+<pre class="line-numbers"><code class="language-PHP">
+    Route::post('/benua-tambah-proses', [BenuaController::class, 'benua_tambah_proses']);
+
+</code></pre>
+
+
+
+<h2 class="step">27. Metode: benua_tambah_proses</h2>
+<span class="ket">Di BenuaController, tambahkan metode <em>benua_tambah_proses</em></span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    public function benua_tambah_proses(Request $request)
+    {
+        $dt_benua = Benua::create($request->all());
+        return redirect('/benua');
+    }
+
+</code></pre>
+<pre class="line-numbers"><code class="language-PHP">
+    # solver
+    use Illuminate\Http\Request;
+
+</code></pre>
+
+<h2 class="step">28. Reload: /benua</h2>
+<span class="ket">Klik tombol Hyperlink <em>Tambah+</em> dihalaman daftar benua atau pergi ke:</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    http://127.0.0.1:8000/benua-tambah
+
+</code></pre>
+<span class="ket">Submit data / nama benua baru</span><hr>
+<div style="margin: 20px auto 20px auto;">
+    <img src="assets/img/submit_nama_benua.png" alt="img1" style="width: 100%;">
+</div>
+<pre class="line-numbers"><code class="language-PHP">
+    # problem:
+    Add [_token] to fillable property to allow mass assignment on [App\Models\Benua].
+
+    # solver:
+    Tambahkan protected $fillable = ["nama_benua"]; di dalam class model Benua
+    # atau
+    Tambahkan protected $guarded = []; di dalam class model Benua
+
+</code></pre>
+
+
+<h2 class="step">21. Membuat Halaman Detail</h2>
+<span class="ket">Next: <a href="01-detail-benua.html" target="_blank">Tutorial Halaman Detail</a> untuk detail benua yang dipilih</span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    &lt;ul&gt;
+        @foreach($data_benua as $benua)
+        &lt;li&gt;
+            &lt;a href="/benua-detail/{{$benua-&gt;id}}"&gt;{{$benua-&gt;nama_benua}}&lt;/a&gt;
+        &lt;/li&gt;
+        @endforeach
+    &lt;/ul&gt;&lt;
+
+</code></pre>
+
+
+
+
+<br>
+<hr>
+<h3>
+    <a href="tutorial/00-menu-utama.html">Menu Utama</a> | 
+    <a href="tutorial/01-detail-benua.html">DETAIL: Benua</a>
+</h3>
+
+</main>
+
+
+<script src="assets/prism/prism-core.min.js"></script>
+<script src="assets/prism/prism-markup.min.js"></script>
+<script src="assets/prism/prism-css.min.js"></script>
+<script src="assets/prism/prism-clike.min.js"></script>
+<script src="assets/prism/prism-javascript.min.js"></script>
+
+<script src="assets/prism/prism-line-numbers.min.js"></script>
+<script src="assets/prism/prism-toolbar.min.js"></script>
+
+<script src="assets/prism/prism-markup-templating.min.js"></script>
+<script src="assets/prism/prism-php.min.js"></script>
+
+</body>
+</html>

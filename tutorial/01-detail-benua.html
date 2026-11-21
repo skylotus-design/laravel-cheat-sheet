@@ -1,0 +1,235 @@
+a<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DETAIL | Benua</title>
+    <link rel="stylesheet" href="../assets/prism/prism-okaidia.min.css">
+    <link rel="stylesheet" href="../assets/prism/prism-line-numbers.min.css">
+    <link rel="stylesheet" href="../assets/prism/prism-toolbar.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<main>
+
+<h1 class="judul">LARAVEL CHEATSHEET : DETAIL - Benua</h1>
+<span class="me">Ananda Daniswara - <a href="https://github.com/skylotus-design">Skylotus Design</a></span>
+
+<br><br><hr>
+<h3>
+    <a href="00-menu-utama.html">Menu Utama</a> | 
+    <a href="01-crud-nama-benua.html">CRUD : Nama-Nama Benua</a>
+</h3>
+<hr><br>
+
+<h2 class="step">01. Hyperlink: Detail Benua</h2>
+<span class="ket">Buka <em>benua_daftar.blade.php</em>, tambahkan hyperlink untuk <em>{{$benua-&gt;nama_benua}}</em></span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    &lt;ul&gt;
+        @foreach($data_benua as $benua)
+        &lt;li&gt;
+            &lt;a href="/benua-detail/{{$benua-&gt;id}}"&gt;{{$benua-&gt;nama_benua}}&lt;/a&gt;
+        &lt;/li&gt;
+        @endforeach
+    &lt;/ul&gt;&lt;
+
+</code></pre>
+
+
+
+<h2 class="step">02. Route: /benua-detail/</h2>
+<span class="ket">Buat route untuk <em>/benua-detail/{id}</em> di routes/web.php untuk metode <em>benua_detail</em> di BenuaController</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    Route::get('/benua-detail/{id}', [BenuaController::class, 'benua_detail']);
+
+</code></pre>
+
+<h2 class="step">03. Metode: benua_detail</h2>
+<span class="ket">Tambahkan metode <em>benua_detail</em> pada BenuaController lalu kirim id benua sebagai argumen</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    public function benua_detail($idb)
+    {
+        $benuaModel = Benua::find($idb);
+        return view('benua_tampil_detail', ['data_benua' => $benuaModel]);
+    }
+
+</code></pre>
+
+
+<h2 class="step">04. File: benua_tampil_detail.blade.php</h2>
+<span class="ket">Buat file <em>benua_tampil_detail.blade.php</em> di resources/views lalu gunakan <em>Extends</em> dan <em>Section</em></span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    @extends('navbar/navbar')
+    @section('konten_utama')
+
+    &lt;div&gt;
+
+        &lt;h4&gt;{{$data_benua-&gt;nama_benua}}&lt;/h4&gt;
+
+    &lt;/div&gt;
+                
+    @endsection
+</code></pre>
+
+
+
+<h2 class="step">05. Hyperlink: Hapus Benua</h2>
+<span class="ket">Masih di <em>benua_tampil_detail.blade.php</em>, tambahkan tombol hyperlink untuk hapus benua</span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    @extends('navbar/navbar')
+    @section('konten_utama')
+
+    &lt;div&gt;
+
+        &lt;h4&gt;{{$data_benua-&gt;nama_benua}}&lt;/h4&gt;
+
+    &lt;/div&gt;
+    
+    &lt;br&gt;&lt;a href="/benua"&gt;Kembali&lt;/a&gt; | 
+    &lt;a href="/benua-hapus/{{$data_benua-&gt;id}}"&gt;Hapus&lt;/a&gt; | 
+                
+    @endsection
+</code></pre>
+
+
+<h2 class="step">06. Route: /benua-hapus/</h2>
+<pre class="line-numbers"><code class="language-PHP">
+    Route::get('/benua-hapus/{id}', [BenuaController::class, 'benua_hapus']);
+
+</code></pre>
+
+
+<h2 class="step">07. Metode: benua_hapus</h2>
+<span class="ket">Tambahkan metode untuk <em>benua_hapus</em> di BenuaController, tangkap id lalu jadikan argumen</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    public function benua_hapus($idb)
+    {
+        $benuaModel = Benua::find($idb);
+        $benuaModel->delete();
+
+        return redirect('/benua');
+    }
+
+</code></pre>
+<pre class="line-numbers"><code class="language-PHP">
+    # problem
+    Error 404 - Not Found
+
+    # solver
+    Cek kembali penulisan value href="" dan penulisan link pada routes
+
+</code></pre>
+
+
+<h2 class="step">08. Hyperlink: Ubah Nama Benua</h2>
+<span class="ket">Kembali ke <em>benua_tampil_detail.blade.php</em>, tambahkan tombol hyperlinnk untuk ubah benua</span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    @extends('navbar/navbar')
+
+    @section('konten_utama')
+    &lt;div&gt;
+
+        &lt;h4&gt;{{$data_benua-&gt;nama_benua}}&lt;/h4&gt;
+
+    &lt;/div&gt;
+    
+    &lt;br&gt;&lt;a href="/benua"&gt;Kembali&lt;/a&gt; | 
+    &lt;a href="/benua-hapus/{{$data_benua-&gt;id}}"&gt;Hapus&lt;/a&gt; | 
+    &lt;a href="/benua-ubah/{{$data_benua-&gt;id}}"&gt;Ubah&lt;/a&gt; | 
+                
+    @endsection
+</code></pre>
+
+
+<h2 class="step">09. Route: /benua-ubah/</h2>
+<pre class="line-numbers"><code class="language-PHP">
+    Route::get('/benua-ubah/{id}', [BenuaController::class, 'benua_ubah']);
+
+</code></pre>
+
+<h2 class="step">10. Method: benua_ubah</h2>
+<span class="ket">Tambahkan metode untuk <em>benua_ubah</em> di BenuaController, tangkap id lalu jadikan argumen</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    public function benua_ubah($idb){
+
+        $benuaModel = Benua::find($idb);
+        return view("benua_ubah_form", ["data_benua" => $benuaModel]);
+
+    }
+
+</code></pre>
+
+<h2 class="step">11. File: benua_ubah_form.blade.php</h2>
+<span class="ket">Buatkan file <em>benua_ubah_form.blade.php</em> di resources/views, pastikan menggunakan <em>Extends</em> dan <em>Section</em></span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    @extends('navbar/navbar')
+    @section('konten_utama')
+
+    &lt;form action="/benua-ubah-proses/{{$data_benua-&gt;id}}" method="post"&gt;
+    @csrf
+        &lt;input type="text" name="nama_benua" value="{{$data_benua-&gt;nama_benua}}"&gt;
+        &lt;input type="submit" name="simpan"&gt;
+    &lt;/form&gt;
+
+    @endsection
+
+</code></pre>
+
+
+<h2 class="step">12. Route: /benua-ubah-proses/</h2>
+<pre class="line-numbers"><code class="language-PHP">
+    Route::post('/benua-ubah-proses/{id}', [BenuaController::class, 'benua_ubah_proses']);
+
+</code></pre>
+
+
+
+<h2 class="step">13. Method: benua_ubah_proses</h2>
+<span class="ket">Tambahkan metode untuk <em>benua_ubah_proses</em> di BenuaController, tangkap id lalu jadikan argumen</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    public function benua_ubah_proses(Request $request, $idb)
+    {
+        $benuaModel = Benua::find($idb);
+        $benuaModel->update($request->all());
+        
+        return redirect("/benua/" . $idb);
+    }
+
+</code></pre>
+
+
+
+<h2 class="step">14. Menambah Daftar Negara</h2>
+<span class="ket">Next: <a href="02-crud-nama-negara.html" target="_blank">Menambah Daftar Negara</a> untuk Benua yang dipilih</span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    &lt;a href="/negara-tambah/{{$data_benua-&gt;id}}"&gt;Tambah Negara+&lt;/a&gt;
+
+</code></pre>
+
+
+
+
+<br>
+<hr>
+<h3>
+    <a href="00-menu-utama.html">Menu Utama</a> | 
+    <a href="02-crud-nama-negara.html">CRUD: Nama-Nama Negara</a>
+</h3>
+
+</main>
+
+<script src="../assets/prism/prism-core.min.js"></script>
+<script src="../assets/prism/prism-markup.min.js"></script>
+<script src="../assets/prism/prism-css.min.js"></script>
+<script src="../assets/prism/prism-clike.min.js"></script>
+<script src="../assets/prism/prism-javascript.min.js"></script>
+
+<script src="../assets/prism/prism-line-numbers.min.js"></script>
+<script src="../assets/prism/prism-toolbar.min.js"></script>
+
+<script src="../assets/prism/prism-markup-templating.min.js"></script>
+<script src="../assets/prism/prism-php.min.js"></script>
+</body>
+
+</html>

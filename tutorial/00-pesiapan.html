@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../assets/prism/prism-okaidia.min.css">
+    <link rel="stylesheet" href="../assets/prism/prism-line-numbers.min.css">
+    <link rel="stylesheet" href="../assets/prism/prism-toolbar.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<main>
+
+<h1 class="judul">LARAVEL CHEATSHEET : Install & Persiapan</h1>
+<span class="me">Ananda Daniswara - <a href="https://github.com/skylotus-design">Skylotus Design</a></span>
+
+<br><br><hr>
+<h3>
+    <a href="00-menu-utama.html">Menu Utama</a> |
+</h3>
+<hr><br>
+
+<h2 class="step">01. Download Laragon Ver.6</h2>
+<span class="ket">Download Laragon versi gratis lalu instal dan ceklis virtual hosts seperti pada gambar</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    https://github.com/leokhoa/laragon/releases/download/6.0.0/laragon-wamp.exe
+
+</code></pre>
+<div style="margin: 20px auto 50px auto;">
+    <img src="../assets/img/instal-laragon-01.jpg" alt="img1" style="width: 100%;">
+</div>
+
+<h2 class="step">02. Download PHP</h2>
+<span class="ket">Download PHP versi terbaru agar bisa menjalankan laravel 13 atau di atasnya</span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    https://www.php.net/downloads.php
+
+</code></pre>
+<div style="margin: 20px auto 50px auto;">
+    <img src="../assets/img/download-php-01.jpg" alt="img1" style="width: 100%;">
+</div>
+
+
+<h2 class="step">03. Ekstrak PHP</h2>
+<span class="ket">Pindahkan file .zip berisi PHP yang telah di-download ke direktori ke C:\laragon\bin\php, lalu pilih extract to agar terekstrak beserta nama foldenya</span><hr>
+<div style="margin: 20px auto 20px auto;">
+    <img src="../assets/img/php-ekstrak-01.jpg" alt="img1" style="width: 100%;">
+</div>
+
+<span class="ket">Hapus folder PHP versi lama beserta file .zip-nya</span><hr>
+</code></pre>
+<div style="margin: 20px auto 50px auto;">
+    <img src="../assets/img/php-delete-01.jpg" alt="img1" style="width: 100%;">
+</div>
+   
+<h2 class="step">04. Download phpMyAdmin</h2>
+<span class="ket">Download phpMyAdmin agar bisa menjalankan di Laragon</span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    https://www.phpmyadmin.net/downloads/
+
+</code></pre>
+<div style="margin: 20px auto 50px auto;">
+    <img src="../assets/img/download-phpmyadmin-01.jpg" alt="img1" style="width: 100%;">
+</div>
+
+<h2 class="step">05. Ekstrak phpMyAdmin</h2>
+<span class="ket">Pindahkan file .zip berisi phpMyAdmin yang telah di-download ke direktori ke C:\laragon\etc\apps, lalu cukup pilih extract here</span><hr>
+<div style="margin: 20px auto 50px auto;">
+    <img src="../assets/img/phpmyadmibn-ekstrak-01.jpg" alt="img1" style="width: 100%;">
+</div>
+
+
+<h2 class="step">06. Rename folder phpMyAdmin</h2>
+<span class="ket">Hapus file .zip lalu rename phpMyAdmin-5.2.3-all-languages menjadi phpMyAdmin</span><hr>
+<div style="margin: 20px auto 20px auto;">
+    <img src="../assets/img/phpmyadmin-delete-01.jpg" alt="img1" style="width: 100%;">
+</div>
+<div style="margin: 20px auto 50px auto;">
+    <img src="../assets/img/phpmyadmin-rename-01.jpg" alt="img1" style="width: 100%;">
+</div>
+
+
+<h2 class="step">07. Download Composer</h2>
+<pre class="line-numbers"><code class="language-HTML">
+    https://getcomposer.org/download/
+
+</code></pre>
+<div style="margin: 20px auto 20px auto;">
+    <img src="../assets/img/download-composer-01.jpg" alt="img1" style="width: 100%;">
+</div>
+<span class="ket">Install Composesr lalu arahkan ke file php.exe yang ada di C:\laragon\bin\php\php-8.5.12-1-Win32-vs17-x64 kosongkan proxy</span><hr>
+<div style="margin: 20px auto 50px auto;">
+    <img src="../assets/img/composer-instal-01.jpg" alt="img1" style="width: 100%;">
+</div>
+
+<h2 class="step">08. Cek Versi PHP dan Composer</h2>
+<pre class="line-numbers"><code class="language-PHP">
+    # php
+    CMD: php -v 
+
+    # composer 
+    CMD: composer -v
+
+</code></pre>
+
+
+
+
+<br>
+<hr>
+<h3>
+    <a href="00-menu-utama.html">Menu Utama</a> | 
+    <a href="01-crud-nama-benua.html">CRUD: Nama-Nama Benua</a>
+</h3>
+
+</main>
+<script src="../assets/prism/prism-core.min.js"></script>
+<script src="../assets/prism/prism-markup.min.js"></script>
+<script src="../assets/prism/prism-css.min.js"></script>
+<script src="../assets/prism/prism-clike.min.js"></script>
+<script src="../assets/prism/prism-javascript.min.js"></script>
+
+<script src="../assets/prism/prism-line-numbers.min.js"></script>
+<script src="../assets/prism/prism-toolbar.min.js"></script>
+
+<script src="../assets/prism/prism-markup-templating.min.js"></script>
+<script src="../assets/prism/prism-php.min.js"></script>
+</body>
+</html>

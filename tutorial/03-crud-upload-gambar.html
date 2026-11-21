@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD | Upload Gambar</title>
+    <link rel="stylesheet" href="../assets/prism/prism-okaidia.min.css">
+    <link rel="stylesheet" href="../assets/prism/prism-line-numbers.min.css">
+    <link rel="stylesheet" href="../assets/prism/prism-toolbar.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<main>
+
+
+<h1 class="judul">LARAVEL CHEATSHEET : CRUD - Upload File Gambar</h1>
+<span class="me">Ananda Daniswara - <a href="https://github.com/skylotus-design">Skylotus Design</a></span>
+
+<br><br><hr>
+<h3>
+    <a href="00-menu-utama.html">Menu Utama</a> | 
+    <a href="02-crud-nama-negara.html">CRUD : Nama-Nama Negara</a>
+</h3>
+<hr><br>
+
+<h2 class="step">01. Target tabel: gambar_benua MySQL</h2>
+<span class="ket">Membuat tabel gambar_benua yang berelasi dengan tabel benua</span><hr>
+<div style="margin: 20px auto 50px auto;">
+    <img src="../assets/img/target_tabel.png" alt="img1" style="width: 100%;">
+</div>
+
+<h2 class="step">02. Hyperlink: Upload Peta Benua</h2>
+<span class="ket">Buka file <em>benua_tampil_detail.blade.php</em> lalu tambahkan tombol hyperlink <em>Upload Peta+</em> sebelum daftar nama-nama benua</span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    &lt;a href="/peta-upload/{{$data_benua-&gt;id}}"&gt;Upload Peta&lt;/a&gt;&lt;hr&gt;
+
+    &lt;h4&gt;{{$data_benua-&gt;nama_benua}}&lt;/h4&gt;
+
+    &lt;ul&gt;
+        @foreach($data_benua-&gt;negaranya as $negara)
+        &lt;li&gt;{{$negara-&gt;nama_negara}}&lt;/li&gt;
+        @endforeach
+    &lt;/ul&gt;
+
+</code></pre>
+
+
+<h2 class="step">03. Route: /peta-upload/</h2>
+<span class="ket">Tambahkan route /peta-upload untuk menjalankan metode <em>peta_upload</em> pada PetaController</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    Route::get('/peta-upload/{id}', [PetaController::class, 'peta_upload']);
+
+</code></pre>
+<pre class="line-numbers"><code class="language-PHP">
+    # solver
+    use App\Http\Controllers\PetaController;
+
+</code></pre>
+
+<h2 class="step">04. Make: PetaController</h2>
+<span class="ket">Tambahkan route /peta-upload untuk menjalankan metode <em>peta_upload</em> pada PetaController</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    CMD: php artisan make:controller PetaController
+
+</code></pre>
+<span class="ket">Buka file PetaController di app\Http\Controllers, tambahkan metode <em>peta_upload</em> lalu tangkap id yang dikirim melalui route</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    public function peta_upload($idb)
+    {
+        return view('peta_upload_form', ['idnya' => $idb]);
+    }
+
+</code></pre>
+
+<h2 class="step">05. File: peta_upload_form.blade.php</h2>
+<span class="ket">Buatkan file <em>peta_upload_form.blade.php</em> di recources/views</span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    @extends('navbar/navbar')
+    @section('konten_utama')
+
+        &lt;form action="/peta-upload-proses/{{$idnya}}" method="post" enctype="multipart/form-data"&gt;
+        @csrf
+            &lt;input type="file" name="nama_gambar" accept=".jpg, .png, .jpeg, .webp"&gt;
+            &lt;input type="submit" name="simpan"&gt;
+        &lt;/form&gt;
+
+    @endsection
+
+</code></pre>
+
+<h2 class="step">06. Route: /peta-upload-proses/</h2>
+<span class="ket">Tambahkan route /peta-upload-proses/{id} untuk menjalankan metode <em>peta_upload_proses</em> pada PetaController</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    Route::post('/peta-upload-proses/{id}', [PetaController::class, 'peta_upload_proses']);
+    
+</code></pre>
+
+
+<h2 class="step">07. Metode: peta_upload_proses</h2>
+<span class="ket">Tambahkan metode peta_upload_proses di PetaController dan tangkap id yang dikirim lewat form dan route</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    public function peta_upload_proses(Request $request, $idb)
+    {
+        if($request->hasFile("nama_gambar")){
+
+            $gambarnya = $request->file("nama_gambar");
+
+            $nama_gambar = time(). "-" . $gambarnya->getClientOriginalName();
+            $nama_gambar_ok = str_replace(['(', ')', ' '], '', $nama_gambar);
+
+            $gambarnya->move('img/peta/', $nama_gambar_ok);
+
+            $peta = new Peta();
+            $peta->nama_gambar = $nama_gambar_ok;
+            $peta->benua_id = $idb;
+
+            $peta->save();
+        }
+
+        return redirect('/benua-detail/' . $idb);
+    }
+
+</code></pre>
+<pre class="line-numbers"><code class="language-PHP">
+    # solver
+    use App\Models\Peta;
+
+</code></pre>
+
+
+<h2 class="step">08. Folder: public/img/peta</h2>
+<span class="ket">Buka direktori bernama public, buat folder img, lalu buat folder peta di dalam img</span><hr>
+<div style="margin: 20px auto 50px auto;">
+    <img src="../assets/img/folder_img_peta-01.jpg" alt="img1" style="width: 100%;">
+</div>
+
+
+
+<h2 class="step">09. Make Migration: create_gambar_peta_table</h2>
+<pre class="line-numbers"><code class="language-PHP">
+    CMD: php artisan make:migration create_gambar_peta_table
+
+</code></pre>
+<span class="ket">Di dalam direktori database/migrations, cari file bernama <em>create_gambar_peta_table lalu ubah menjadi</em></span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    Schema::create('gambar_peta', function (Blueprint $table) {
+        $table->id();
+        $table->string('nama_gambar', 255);
+        $table->foreignId('benua_id')->references('id')->on('benua')->onDelete('cascade');
+        $table->timestamps();
+    });
+
+</code></pre>
+<span class="ket">Jalankan perintah migration untuk membuat tabel gambar_peta di MySQL</em></span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    # solver
+    CMD: php artisan migrate
+
+</code></pre>
+
+<h2 class="step">10. Make Model: Peta</h2>
+<pre class="line-numbers"><code class="language-PHP">
+    # solver
+    CMD: php artisan make:model Peta
+
+</code></pre>
+<span class="ket">Buka file Peta di app\Models dan tambahkan kode berikut agar tabel gambar_peta dapat dikenali dan kolom nama_gamabr/benua_id dapat di-insert data baru</em></span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    protected $table = "gambar_peta";
+    protected $fillable = ["nama_gambar", "benua_id"];
+
+</code></pre>
+
+
+<h2 class="step">11. Model Benua: HasMany</h2>
+<span class="ket">Kembali ke Model Benua, tambahkan metode berikut agar Model Benua dapat Berelasi dengan Model Peta</em></span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    public function gambarPetanya(){
+        return $this->hasMany(Peta::class, 'benua_id', 'id');
+    }
+
+</code></pre>
+<pre class="line-numbers"><code class="language-PHP">
+    # solver
+    use App\Models\Peta;
+
+</code></pre>
+
+
+
+<h2 class="step">12. BenuaControler: with Peta</h2>
+<span class="ket">Buka file BenuaControler dan cari metode benua_detail lalu ubah menjadi seperti berikut:</em></span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    public function benua_detail($idb)
+    {
+        $dt_benua = Benua::with('negaranya')->find($idb);
+        $petaModel = Benua::with('gambarPetanya')->find($idb);
+        return view('benua_tampil_detail', ['data_benua' => $dt_benua, 'data_peta' => $petaModel]);
+    }
+
+</code></pre>
+
+
+<h2 class="step">13. Halaman: Tampil Gambar Peta</h2>
+<span class="ket">Buka kembali file <em>benua_tampil_detail.blade.php</em> lalu tambahkan kode berikut</span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    &lt;div&gt;
+        &lt;!-- hanya mengambil data pertama agar tidak harus di-loop --&gt;
+        @php
+            $gambarPeta = $data_peta-&gt;gambarPetanya-&gt;first();
+        @endphp
+
+        @if($data_peta-&gt;gambarPetanya-&gt;isNotEmpty())
+            &lt;img src="/img/peta/{{$gambarPeta-&gt;nama_gambar}}" alt="peta" style="max-width:460px;"&gt;
+        @else
+            &lt;a href="/peta-upload/{{$data_peta-&gt;id}}"&gt;Upload Peta&lt;/a&gt;
+        @endif
+    &lt;/div&gt;
+    &lt;hr&gt;
+
+</code></pre>
+
+<h2 class="step">14. Hyperlink: Hapus Gambar</h2>
+<pre class="line-numbers"><code class="language-HTML">
+    &lt;div&gt;
+        &lt;!-- hanya mengambil data pertama agar tidak harus di-loop --&gt;
+        @php
+            $gambarPeta = $data_peta-&gt;gambarPetanya-&gt;first();
+        @endphp
+
+        @if($data_peta-&gt;gambarPetanya-&gt;isNotEmpty())
+            &lt;img src="/img/peta/{{$gambarPeta-&gt;nama_gambar}}" alt="peta" style="max-width:460px;"&gt;
+            &lt;br&gt;&lt;a href="/peta-hapus-proses/{{$data_benua-&gt;id}}/{{$gambarPeta-&gt;id}}"&gt;Hapus&lt;/a&gt;
+        @else
+            &lt;a href="/peta-upload/{{$data_peta-&gt;id}}"&gt;Upload Peta&lt;/a&gt;
+        @endif
+    &lt;/div&gt;
+    &lt;hr&gt;
+
+</code></pre>
+
+
+<h2 class="step">15. Route: /peta-hapus-proses/</h2>
+<pre class="line-numbers"><code class="language-PHP">
+    Route::get('/peta-hapus-proses/{idb}/{idp}', [PetaController::class, 'peta_hapus_proses']);
+    
+</code></pre>
+
+<h2 class="step">16. Metode: peta_hapus_proses</h2>
+<span class="ket">Pada PetaController buatkan metode untuk peta_hapus_proses</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    public function peta_hapus_proses($idb, $idp){
+
+        $petaModel = Peta::find($idp);
+
+        if(File::exists('img/peta/' . $petaModel->nama_gambar)){
+            File::delete('img/peta/' . $petaModel->nama_gambar);
+        }
+
+        $petaModel->delete();
+        return redirect('/benua-detail/' . $idb);
+    }
+
+</code></pre>
+<pre class="line-numbers"><code class="language-PHP">
+    # solver
+    use Illuminate\Support\Facades\File;
+
+</code></pre>
+
+
+<h2 class="step">17. Hapus File Gambar</h2>
+<span class="ket">Next: <a href="05-hapus-gambar-peta.html" target="_blank">Hapus file gambar</a> di public/img/peta ketika nama Benua dihapus</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    foreach($dataGambar as $gambar){
+        if(File::exists('img/peta/' . $gambar->nama_gambar)){
+            File::delete('img/peta/' . $gambar->nama_gambar);
+        }
+    }
+
+</code></pre>
+
+
+<h2 class="step">18. Full Code: benua_tampil_detail.blade.php</h2>
+<pre class="line-numbers"><code class="language-HTML">
+    @extends('navbar/navbar')
+    @section('konten_utama')
+
+    &lt;div&gt;
+        &lt;div&gt;
+            &lt;!-- hanya mengambil data pertama agar tidak harus di-loop --&gt;
+            @php
+                $gambarPeta = $data_peta-&gt;gambarPetanya-&gt;first();
+            @endphp
+
+            @if($data_peta-&gt;gambarPetanya-&gt;isNotEmpty())
+                &lt;img src="/img/peta/{{$gambarPeta-&gt;nama_gambar}}" alt="" style="max-width:460px;" class="mb-2"&gt;
+                &lt;br&gt;&lt;a href="/peta-hapus-proses/{{$data_benua-&gt;id}}/{{$gambarPeta-&gt;id}}"&gt;Hapus&lt;/a&gt;
+            @else
+                &lt;div class="mb-2 h5 text-secondary"&gt;Belum Ada Gambar Peta&lt;/div&gt;
+                &lt;a href="/peta-upload/{{$data_peta-&gt;id}}"&gt;Upload Peta&lt;/a&gt;
+            @endif
+        &lt;/div&gt;
+
+        &lt;hr&gt;&lt;h4&gt;{{$data_benua-&gt;nama_benua}}&lt;/h4&gt;
+
+        &lt;ul&gt;
+            @foreach($data_benua-&gt;negaranya as $negara)
+            &lt;li&gt;{{$negara-&gt;nama_negara}}&lt;/li&gt;
+            @endforeach
+        &lt;/ul&gt;
+
+        &lt;br&gt;&lt;a href="/benua"&gt;Kembali&lt;/a&gt; | 
+
+        &lt;a href="/benua-hapus/{{$data_benua-&gt;id}}"&gt;Hapus&lt;/a&gt; | 
+        &lt;a href="/benua-ubah/{{$data_benua-&gt;id}}"&gt;Ubah&lt;/a&gt; | 
+
+        &lt;a href="/negara-hapus/{{$data_benua-&gt;id}}"&gt;Hapus Negara&lt;/a&gt; |
+        &lt;a href="/negara-tambah/{{$data_benua-&gt;id}}"&gt;Tambah Negara+&lt;/a&gt;
+    &lt;/div&gt;
+
+    @endsection
+
+</code></pre>
+
+<br>
+<hr>
+<h3>
+    <a href="00-menu-utama.html">Menu Utama</a> | 
+    <a href="03-hapus-gambar-peta.html">MISC: Hapus Gambar Berelasi</a>
+</h3>
+
+</main>
+
+
+<script src="../assets/prism/prism-core.min.js"></script>
+<script src="../assets/prism/prism-markup.min.js"></script>
+<script src="../assets/prism/prism-css.min.js"></script>
+<script src="../assets/prism/prism-clike.min.js"></script>
+<script src="../assets/prism/prism-javascript.min.js"></script>
+
+<script src="../assets/prism/prism-line-numbers.min.js"></script>
+<script src="../assets/prism/prism-toolbar.min.js"></script>
+
+<script src="../assets/prism/prism-markup-templating.min.js"></script>
+<script src="../assets/prism/prism-php.min.js"></script>
+
+</body>
+</html>

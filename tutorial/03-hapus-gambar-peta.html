@@ -1,0 +1,100 @@
+a<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD | Hapus Gambar</title>
+    <link rel="stylesheet" href="../assets/prism/prism-okaidia.min.css">
+    <link rel="stylesheet" href="../assets/prism/prism-line-numbers.min.css">
+    <link rel="stylesheet" href="../assets/prism/prism-toolbar.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<main>
+
+    
+<h1 class="judul">LARAVEL CHEATSHEET : MISC - Hapus File Berelasi</h1>
+<span class="me">Ananda Daniswara - <a href="https://github.com/skylotus-design">Skylotus Design</a></span>
+
+<br><br><hr>
+<h3>
+    <a href="00-menu-utama.html">Menu Utama</a> | 
+    <a href="03-crud-upload-gambar.html">CRUD : Hapus File Berelasi</a>
+</h3>
+<hr><br>
+
+
+<h2 class="step">01. Hapus Tabel Berelasi</h2>
+<span class="ket">Hapus file gambar di public/img/peta ketika tabel benua dihapus</span><hr>
+<div style="margin: 20px auto 50px auto;">
+    <img src="../assets/img/target_tabel.png" alt="img1" style="width: 100%;">
+</div>
+
+<h2 class="step">02. Tombol Hapus Benua</h2>
+<span class="ket">Buka file <em>benua_tampil_detail.blade.php</em> dan perhatikan tombol hapus</span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    &lt;a href="/benua-hapus/{{$data_benua-&gt;id}}"&gt;Hapus&lt;/a&gt; | 
+    &lt;a href="/benua-ubah/{{$data_benua-&gt;id}}"&gt;Ubah&lt;/a&gt; | 
+
+    &lt;a href="/negara-hapus/{{$data_benua-&gt;id}}"&gt;Hapus Negara&lt;/a&gt; |
+    &lt;a href="/negara-tambah/{{$data_benua-&gt;id}}"&gt;Tambah Negara+&lt;/a&gt;
+
+</code></pre>
+
+
+<span class="ket">Tombol Hapus mengarah ke benua-hapus/{id} yang akan menjalankan metode <em>benua_hapus_proses</em> pada BenuaController</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    Route::get('/benua-hapus/{id}', [BenuaController::class, 'benua_hapus_proses']);
+
+</code></pre>
+
+<h2 class="step">02. BenuaController: ubah kode</h2>
+<span class="ket">Ubah kode di dalam metode benua_hapus pada BenuaController menjadi</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    public function benua_hapus_proses($id){
+
+        $benuaModel = Benua::find($id);
+        $dataGambar = Peta::where('benua_id', $id)->get();
+
+        foreach($dataGambar as $gambar){
+            if(File::exists('img/peta/' . $gambar->nama_gambar)){
+                File::delete('img/peta/' . $gambar->nama_gambar);
+            }
+        }
+        
+        $benuaModel->delete();
+        return redirect('/benua');
+    }
+
+</code></pre>
+<pre class="line-numbers"><code class="language-PHP">
+    # solver
+    use App\Models\Peta;
+    use Illuminate\Support\Facades\File;
+
+</code></pre>
+
+
+<br>
+<hr>
+<h3>
+    <a href="00-menu-utama.html">Menu Utama</a>
+</h3>
+
+</main>
+
+<script src="../assets/prism/prism-core.min.js"></script>
+<script src="../assets/prism/prism-markup.min.js"></script>
+<script src="../assets/prism/prism-css.min.js"></script>
+<script src="../assets/prism/prism-clike.min.js"></script>
+<script src="../assets/prism/prism-javascript.min.js"></script>
+
+<script src="../assets/prism/prism-line-numbers.min.js"></script>
+<script src="../assets/prism/prism-toolbar.min.js"></script>
+
+<script src="../assets/prism/prism-markup-templating.min.js"></script>
+<script src="../assets/prism/prism-php.min.js"></script>
+</body>
+
+</html>

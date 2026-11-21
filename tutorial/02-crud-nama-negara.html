@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD | Nama-Nama Negara</title>
+    <link rel="stylesheet" href="../assets/prism/prism-okaidia.min.css">
+    <link rel="stylesheet" href="../assets/prism/prism-line-numbers.min.css">
+    <link rel="stylesheet" href="../assets/prism/prism-toolbar.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<main>
+
+<h1 class="judul">LARAVEL CHEATSHEET : CRUD - Nama-Nama Negara</h1>
+<span class="me">Ananda Daniswara - <a href="https://github.com/skylotus-design">Skylotus Design</a></span>
+
+<br><br><hr>
+<h3>
+    <a href="00-menu-utama.html">Menu Utama</a> | 
+    <a href="01-detail-benua.html">DETAIL : Benua</a>
+</h3>
+<hr><br>
+
+<h2 class="step">01. Target Tabel: negara MySQL</h2>
+<span class="ket">Membuat tabel negara yang berelasi dengan tabel benua</span><hr>
+<div style="margin: 20px auto 50px auto;">
+    <img src="../assets/img/target_tabel.png" alt="img1" style="width: 100%;">
+</div>
+
+
+
+<h2 class="step">02. Hyperlink: Tambah Negara</h2>
+<span class="ket">Buka file <em>benua_tampil_detail.blade.php</em> lalu tambahkan tombol hyperlink <em>Tambah Negara+</em> setelah tombol Ubah</span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    &lt;br&gt;&lt;a href="/benua"&gt;Kembali&lt;/a&gt; | 
+    &lt;a href="/benua-hapus/{{$data_benua-&gt;id}}"&gt;Hapus&lt;/a&gt; | 
+    &lt;a href="/benua-ubah/{{$data_benua-&gt;id}}"&gt;Ubah&lt;/a&gt; | 
+
+    &lt;a href="/negara-tambah/{{$data_benua-&gt;id}}"&gt;Tambah Negara+&lt;/a&gt; |
+
+</code></pre>
+
+
+
+<h2 class="step">03. Route: /negara-tambah/</h2>
+<span class="ket">Buat route untuk <em>/negara-tambah/{id}</em> di routes/web.php, untuk menjalankan metode <em>negara_tambah</em> di NegaraController</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    Route::get('/negara-tambah/{id}', [NegaraController::class, 'negara_tambah']);
+
+</code></pre>
+<pre class="line-numbers"><code class="language-PHP">
+    # solver
+    use App\Http\Controllers\NegaraController;
+
+</code></pre>
+
+
+<h2 class="step">04. Make: NegaraController</h2>
+<pre class="line-numbers"><code class="language-PHP">
+    CMD: php artisan make:controller NegaraController
+
+</code></pre>
+<span class="ket">Buka NegaraController yang berada di app\Http\Controller lalu tambahkan metode <em>negara_tambah</em></span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    public function negara_tambah($id)
+    {
+        return view('negara_tambah_form', ['idnya' => $id]);
+    }
+
+</code></pre>
+
+
+<h2 class="step">05. File: negara_tambah_form.blade.php</h2>
+<span class="ket">Buatkan file negara_tambah_form.blade.php di recources/views</span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    @extends('navbar/navbar')
+    @section('konten_utama')
+
+    &lt;form action="/negara-tambah-proses/{{$idnya}}" method="post"&gt;
+        @csrf
+        &lt;input type="text" name="nama_negara" placeholder="Masukan nama negara" pattern="[A-Za-z ]+" required&gt;
+        &lt;input type="hidden" name="benua_id" value="{{$idnya}}"&gt;
+        &lt;input type="submit" value="TAMBAH NEGARA"&gt;
+
+    &lt;/form&gt;
+
+    @endsection
+
+</code></pre>
+
+
+<h2 class="step">06. Make Migration: create_negara_table</h2>
+<pre class="line-numbers"><code class="language-PHP">
+    # solver
+    CMD: php artisan make:migration create_negara_table
+
+</code></pre>
+<span class="ket">Buka file migration create_negara_table yang ada di direktori database\migrations lalu ubah menjadi:</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    Schema::create('negara', function (Blueprint $table) {
+        $table->id();
+        $table->string('nama_negara', 255);
+        $table->foreignId('benua_id')->references('id')->on('benua')->onDelete('cascade');
+        $table->timestamps();
+    });
+
+</code></pre>
+<span class="ket">Jalankan migration untuk membuat tabel negara di MySQL</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    # solver
+    CMD: php artisan migrate
+
+</code></pre>
+
+
+<h2 class="step">07. Make: Model Negara</h2>
+<pre class="line-numbers"><code class="language-PHP">
+    # solver
+    CMD: php artisan make:model Negara
+
+</code></pre>
+<span class="ket">Buka file model Negara di app\Models lalu tambahkan kode berikut di dalam class agar tabel negara di MySQL dapat dikenali dan dapat di-insert</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    protected $table = "negara";
+    protected $fillable = ["nama_negara", "benua_id"];
+
+</code></pre>
+
+
+
+
+<h2 class="step">08. Insert: Nama Negara</h2>
+<span class="ket">Reload http://127.0.0.1:8000/benua-detail/ di browser lalu klik tombol <em>Tambah Negara</em>+</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    # problem
+    Call to undefined method App\Http\Controllers\BenuaController::negara_tambah()
+
+    # solver
+    Cek kembali pengejaan pada route, pastikan penulisan NegaraController::class,
+    bukan BenuaController::class
+
+</code></pre>
+<pre class="line-numbers"><code class="language-PHP">
+    # problem
+    View [negara_tambah] not found.
+
+    # solver
+    Cek kembali Controller, pastikan penulisan view("negara_tambah_form", ['data_benua' => $benuaModel]);
+    bukan view("negara_tambah", ['data_benua' => $benuaModel]);
+
+</code></pre>
+
+
+
+<h2 class="step">09. Route: /negara-tambah-proses/</h2>
+<pre class="line-numbers"><code class="language-PHP">
+    Route::post('/negara-tambah-proses/{id}', [NegaraController::class, 'negara_tambah_proses']);
+    
+</code></pre>
+
+
+<h2 class="step">10. Metode: negara_tambah_proses</h2>
+<span class="ket">Buka NegaraController, lalu tambahkan metode <em>negara_tambah_proses</em> dan tangkap id yang dikirim melalui route</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    public function negara_tambah_proses(Request $req, $id)
+    {
+        $negaraModel = Negara::create($req->all());
+        return redirect('/benua-detail/' . $id);
+    }
+
+</code></pre>
+
+
+
+<h2 class="step">11. Model: HasMany</h2>
+<span class="ket">Buka kembali model Benua lalu tambahkan metode berikut:</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    public function negaranya()
+    {
+        return $this->hasMany(Negara::class, 'benua_id', 'id');
+    }
+
+</code></pre>
+<pre class="line-numbers"><code class="language-PHP">
+    # solver
+    use App\Models\Negara;
+
+</code></pre>
+
+
+
+<h2 class="step">12. BenuaController: with Negara</h2>
+<span class="ket">Buka kembali BenuaController, lalu cari metode <em>benua_detail</em> kemudian ubah kode menjadi</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    public function benua_detail($id){
+
+        $benuaModel = Benua::with('negaranya')->find($id);
+        return view('benua_detail', ['data_benua' => $benuaModel]);
+
+    }
+
+</code></pre>
+
+
+
+<h2 class="step">13. Halaman: Tampil Negara</h2>
+<span class="ket">Pada file <em>benua_tampil_detail.blade.php</em> tambahkan kode berikut untuk menampilkan daftar negara di bawah nama benua</span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    &lt;h4&gt;{{$data_benua-&gt;nama_benua}}&lt;/h4&gt;
+
+    &lt;ul&gt;
+        @foreach($data_benua-&gt;negaranya as $negara)
+        &lt;li&gt;{{$negara-&gt;nama_negara}}&lt;/li&gt;
+        @endforeach
+    &lt;/ul&gt;
+    
+
+</code></pre>
+
+<h2 class="step">14. Halaman: Hapus Negara</h2>
+<span class="ket">Masih di file <em>benua_tampil_detail.blade.php</em>, tambahkan tombol hyperlink <em>Hapus Negara</em></span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    &lt;br&gt;&lt;a href="/benua"&gt;Kembali&lt;/a&gt; | 
+    &lt;a href="/benua-hapus/{{$data_benua-&gt;id}}"&gt;Hapus&lt;/a&gt; | 
+    &lt;a href="/benua-ubah/{{$data_benua-&gt;id}}"&gt;Ubah&lt;/a&gt; | 
+
+    &lt;a href="/negara-hapus/{{$data_benua-&gt;id}}"&gt;Hapus Negara&lt;/a&gt; |
+    &lt;a href="/negara-tambah/{{$data_benua-&gt;id}}"&gt;Tambah Negara+&lt;/a&gt;
+
+</code></pre>
+
+
+<h2 class="step">15. Route: /negara-hapus/</h2>
+<pre class="line-numbers"><code class="language-PHP">
+    Route::get('/negara-hapus/{id}', [NegaraController::class, 'negara_hapus']);
+    
+</code></pre>
+
+<h2 class="step">16. Metode: negara_hapus</h2>
+<span class="ket">Tambahkan metode <em>negara_hapus</em> di NegaraController, dan tangkap id yang dikirim melalui route</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    public function negara_hapus($idb)
+    {
+        $negaraModel = Negara::where('benua_id', $idb)->get();
+        return view('negara_hapus', ['data_negara' => $negaraModel, 'id_benua' => $idb]);
+    }
+
+</code></pre>
+
+
+<h2 class="step">17. File: negara_hapus.blade.php</h2>
+<span class="ket">Buat file <em>negara_hapus.blade.php</em> di resources/views untuk memunculkan opsi hapus negara</span><hr>
+<pre class="line-numbers"><code class="language-HTML">
+    @extends('navbar/navbar')
+    @section('konten_utama')
+
+    &lt;h5&gt;Hapus Negara&lt;/h5&gt;&lt;hr&gt;
+
+    &lt;ul&gt;
+        @foreach($data_negara as $negara)
+        &lt;li&gt;{{$negara-&gt;nama_negara}} |
+            &lt;a href="/negara-hapus-proses/{{$negara-&gt;benua_id}}/{{$negara-&gt;id}}"&gt; Hapus&lt;/a&gt;
+        &lt;/li&gt;
+        @endforeach
+    &lt;/ul&gt;&lt;br&gt;
+
+        @if($data_negara-&gt;isNotEmpty())
+            &lt;a href="/benua-detail/{{$id_benua}}"&gt;Kembali&lt;/a&gt;
+        @else
+            &lt;span&gt;Belum memiliki daftar negara&lt;/span&gt; | 
+            &lt;a href="/negara-tambah/{{$id_benua}}"&gt;Tambah Negara+&lt;/a&gt;
+        @endif
+
+    @endsection
+
+</code></pre>
+
+
+
+
+<h2 class="step">18. Route: /negara-hapus-proses/</h2>
+<pre class="line-numbers"><code class="language-PHP">
+    Route::get('/negara-hapus-proses/{idb}/{idn}', [NegaraController::class, 'negara_hapus_proses']);
+    
+</code></pre>
+
+<h2 class="step">19. Metode: negara_hapus_proses</h2>
+<span class="ket">Tambahkan metode <em>negara_hapus_proses</em> di NegaraController, tangkap id benua dan id negara yang dikirim melalui route</span><hr>
+<pre class="line-numbers"><code class="language-PHP">
+    public function negara_hapus_proses($idb, $idn){
+
+        $negaraModel = Negara::find($idn);
+        $negaraModel->delete();
+
+        return redirect('/negara-hapus/' . $idb);
+    }
+
+</code></pre>
+
+
+
+<br>
+<hr>
+<h3>
+    <a href="00-menu-utama.html">Menu Utama</a> | 
+    <a href="03-crud-upload-gambar.html">CRUD: Upload Gambar</a>
+</h3>
+
+
+
+</main>
+
+<script src="../assets/prism/prism-core.min.js"></script>
+<script src="../assets/prism/prism-markup.min.js"></script>
+<script src="../assets/prism/prism-css.min.js"></script>
+<script src="../assets/prism/prism-clike.min.js"></script>
+<script src="../assets/prism/prism-javascript.min.js"></script>
+
+<script src="../assets/prism/prism-line-numbers.min.js"></script>
+<script src="../assets/prism/prism-toolbar.min.js"></script>
+
+<script src="../assets/prism/prism-markup-templating.min.js"></script>
+<script src="../assets/prism/prism-php.min.js"></script>
+
+</body>
+
+</html>
